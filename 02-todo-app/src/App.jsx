@@ -10,6 +10,7 @@ import "./styles.css";
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
 
   const handleQuery = (e) => {
     const val = e.target.value;
@@ -34,7 +35,7 @@ export default function App() {
   };
 
   const handleDelete = (taskIdToBeDeleted) => {
-    setTasks(tasks => tasks.filter(t => t.id !== taskIdToBeDeleted));
+    setTasks((tasks) => tasks.filter((t) => t.id !== taskIdToBeDeleted));
   };
 
   const handleCompletion = (id) => {
@@ -43,16 +44,46 @@ export default function App() {
     );
   };
 
+  const handleActionBtns = (e) => {
+    const id = e.target.id;
+    if(id === "all" || id === "active" || id === "completed")
+    setFilter(id);
+  };
+
+  const visibleTasks = tasks.filter(task => {
+    if(filter === "all") return task;
+    if(filter === "active") return !task.completed
+    return task.completed;
+  })
+
   return (
     <div className="container">
       <div className="flex">
         <input type="text" value={query} onChange={handleQuery} />
         <button onClick={handleCreate}>Create</button>
       </div>
-
+      <div className="flex action_btns" onClick={handleActionBtns}>
+        <button id="all" className={`${filter === "all" ? "active" : ""}`}>
+          All
+        </button>
+        <button
+          id="active"
+          className={`${filter === "active" ? "active" : ""}`}
+        >
+          Active
+        </button>
+        <button
+          id="completed"
+          className={`${filter === "completed" ? "active" : ""}`}
+        >
+          Completed
+        </button>
+      </div>
       <div className="tasks_container">
         {tasks?.length
-          ? tasks.map((task) => (
+          ? 
+          visibleTasks?.length > 0 ?
+          visibleTasks.map((task) => (
               <div className="task flex" key={task.id}>
                 <span>{task.text}</span>
                 <span>{task.completed ? "completed" : "not completed"}</span>
@@ -62,7 +93,13 @@ export default function App() {
                 </button>
               </div>
             ))
-          : null}
+          : <div className="flex">  
+            No tasks, try changing filter
+
+          </div>
+          : <div className="flex"> 
+              Create task
+            </div>}
       </div>
     </div>
   );
