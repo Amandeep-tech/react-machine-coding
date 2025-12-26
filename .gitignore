@@ -1,0 +1,12 @@
+# dependencies
+node_modules
+
+# build outputs
+dist
+.vite
+
+# OS
+.DS_Store
+
+# logs
+npm-debug.log*
