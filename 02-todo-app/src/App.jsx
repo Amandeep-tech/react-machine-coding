@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles.css";
+import TodoInput from "./components/TodoInput";
 
 // {
 //   id: number,
@@ -117,23 +118,11 @@ export default function App() {
   return (
     <div className="container">
       <div className="flex">
-        <label htmlFor="todo_input">Add Task</label>
-        <input
-          id="todo_input"
-          type="text"
-          value={query}
+        <TodoInput
+          query={query}
           onChange={handleQuery}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleCreate(e);
-            } else if (e.key === "Escape") {
-              setQuery("");
-            }
-          }}
+          onCreate={handleCreate}
         />
-        <button aria-label="Create Task" onClick={handleCreate}>
-          Create
-        </button>
       </div>
       <div
         role="group"
