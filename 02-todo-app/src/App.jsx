@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles.css";
 import TodoInput from "./components/TodoInput";
+import TodoFilters from "./components/TodoFilters";
+import TodoList from "./components/TodoList";
 
 // {
 //   id: number,
@@ -26,7 +28,6 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editedText, setEditedText] = useState("");
-  const editingInpRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -36,11 +37,7 @@ export default function App() {
     localStorage.setItem("activeFilter", filter);
   }, [filter]);
 
-  useEffect(() => {
-    if (editingId && editingInpRef.current) {
-      editingInpRef.current.focus();
-    }
-  }, [editingId]);
+ 
 
   const handleQuery = (e) => {
     const val = e.target.value;
@@ -74,9 +71,8 @@ export default function App() {
     );
   };
 
-  const handleActionBtns = (e) => {
-    const id = e.target.id;
-    if (id === "all" || id === "active" || id === "completed") setFilter(id);
+  const handleFilterChange = (selectedFilter) => {
+    setFilter(selectedFilter);
   };
 
   const visibleTasks = tasks.filter((task) => {
@@ -124,104 +120,20 @@ export default function App() {
           onCreate={handleCreate}
         />
       </div>
-      <div
-        role="group"
-        aria-label="Task filters"
-        className="flex action_btns"
-        onClick={handleActionBtns}
-      >
-        <button
-          id="all"
-          aria-label="Filter all task"
-          className={`${filter === "all" ? "active" : ""}`}
-        >
-          All
-        </button>
-        <button
-          id="active"
-          aria-label="Filter active task"
-          className={`${filter === "active" ? "active" : ""}`}
-        >
-          Active
-        </button>
-        <button
-          id="completed"
-          aria-label="Filter completed task"
-          className={`${filter === "completed" ? "active" : ""}`}
-        >
-          Completed
-        </button>
+      <div role="group" aria-label="Task filters" className="flex action_btns">
+        <TodoFilters filter={filter} onChange={handleFilterChange} />
       </div>
-      <ul className="tasks_container">
-        {tasks?.length ? (
-          visibleTasks?.length > 0 ? (
-            visibleTasks.map((task) => (
-              <li className="task flex" key={task.id}>
-                {task.id === editingId ? (
-                  <input
-                    type="text"
-                    aria-label="Editing task"
-                    ref={editingInpRef}
-                    value={editedText}
-                    onChange={handleEditedText}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSave();
-                      } else if (e.key === "Escape") {
-                        handleDiscard();
-                      }
-                    }}
-                  />
-                ) : (
-                  <span>{task.text}</span>
-                )}
-                <span role="status" aria-live="polite">
-                  {task.completed ? "completed" : "not completed"}
-                </span>
-                {task.id === editingId ? null : (
-                  <button
-                    aria-label={`Edit task ${task.text}`}
-                    onClick={() => handleEdit(task)}
-                  >
-                    Edit
-                  </button>
-                )}
-                {task.id === editingId ? (
-                  <>
-                    <button aria-label="Save Task" onClick={handleSave}>
-                      Save
-                    </button>
-                    <button aria-label="Discard Task" onClick={handleDiscard}>
-                      Discard
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      aria-label={`Delete task ${task.text}`}
-                      onClick={() => handleDelete(task.id)}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      aria-label={`Mark ${task.text} ${
-                        task.completed ? "uncomplete" : "complete"
-                      }`}
-                      onClick={() => handleCompletion(task.id)}
-                    >
-                      Mark as {task.completed ? "uncomplete" : "complete"}
-                    </button>
-                  </>
-                )}
-              </li>
-            ))
-          ) : (
-            <div className="flex">No tasks, try changing filter</div>
-          )
-        ) : (
-          <div className="flex">Create task</div>
-        )}
-      </ul>
+      <TodoList
+        tasks={visibleTasks}
+        editedText={editedText}
+        editingId={editingId}
+        onEdit={handleEdit}
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        onEditTextChange={handleEditedText}
+        onDelete={handleDelete}
+        onToggleComplete={handleCompletion}
+      />
     </div>
   );
 }
