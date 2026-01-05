@@ -20,7 +20,7 @@ export default function TodoItem({
   }, [isEditing]);
 
   return (
-    <li className="task flex" key={task.id}>
+    <li className="task flex">
       {isEditing ? (
         <input
           type="text"
