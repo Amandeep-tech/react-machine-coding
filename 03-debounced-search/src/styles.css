@@ -35,6 +35,9 @@ input:focus {
 ul {
   padding-left: 0;
 }
+.active {
+  background-color: turquoise;
+}
 
 .mb {
   margin-bottom: 8px;

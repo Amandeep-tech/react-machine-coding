@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { act, useEffect, useRef, useState } from "react";
 import "./styles.css";
 
 const fetchUsers = (query) =>
@@ -28,6 +28,8 @@ export default function App() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [activeIndex, setActiveIndex] = useState(-1);
+
   const lastQueryId = useRef(0);
 
   const cacheRef = useRef({});
@@ -42,7 +44,7 @@ export default function App() {
     }
 
     // check in CACHE first
-    if(cacheRef.current[query]) {
+    if (cacheRef.current[query]) {
       setResults(cacheRef.current[query]);
       return;
     }
@@ -64,9 +66,46 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [query]);
 
+  useEffect(() => {
+    // reset active index to -1 for new results :)
+    setActiveIndex(-1);
+  }, [results]);
+
   const handleQuery = (e) => {
     const text = e.target.value;
     setQuery(text);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!results.length) return;
+
+    const key = e.key;
+
+    switch (key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setActiveIndex((prev) => (prev + 1) % results.length);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+
+        setActiveIndex((prev) =>
+          prev > 0 ? (prev - 1) % results.length : results.length - 1
+        );
+        break;
+      case "Escape":
+        setResults([]);
+        setQuery("");
+        setActiveIndex(-1);
+        break;
+      case "Enter":
+        if (activeIndex >= 0) {
+          alert(`Selected ${results[activeIndex]}`);
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -81,14 +120,22 @@ export default function App() {
           placeholder="Search..."
           value={query}
           onChange={handleQuery}
+          onKeyDown={handleKeyDown}
         />
         <div className="container results">
           {loading ? (
             <div className="loading">Loading...</div>
           ) : (
-            <ul>
-              {results.map((result) => (
-                <li key={result}>{result}</li>
+            <ul role="listbox">
+              {results.map((result, index) => (
+                <li
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  key={result}
+                  className={index === activeIndex ? "active" : ""}
+                >
+                  {result}
+                </li>
               ))}
             </ul>
           )}
