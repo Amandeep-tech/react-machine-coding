@@ -10,3 +10,37 @@ body {
   height: 100vh;
 }
 
+.debounced_search {
+  position: relative;
+}
+
+.container {
+  margin-top: 6px;
+  position: absolute;
+  top: 4.5rem;
+  width: 100%;
+}
+
+input {
+  padding: 10px;
+  height: 1rem;
+  outline: none;
+  border: none;
+}
+input:focus {
+  border: none;
+  outline: none;
+}
+
+ul {
+  padding-left: 0;
+}
+
+.mb {
+  margin-bottom: 8px;
+}
+.loading {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
