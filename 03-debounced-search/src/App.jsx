@@ -30,12 +30,20 @@ export default function App() {
 
   const lastQueryId = useRef(0);
 
+  const cacheRef = useRef({});
+
   useEffect(() => {
     // for every query change, I have a new requestId
     const currentReqId = ++lastQueryId.current;
     if (!query.trim()) {
       setResults([]);
       setLoading(false);
+      return;
+    }
+
+    // check in CACHE first
+    if(cacheRef.current[query]) {
+      setResults(cacheRef.current[query]);
       return;
     }
 
@@ -48,6 +56,8 @@ export default function App() {
         return;
       }
       setResults(resp);
+      // store new key:value pairs in cache as well.
+      cacheRef.current[query] = resp;
       setLoading(false);
     }, 500);
 
