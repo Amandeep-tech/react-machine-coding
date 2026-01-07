@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles.css";
+import useDebouncedSearch from "./hooks/useDebouncedSearch";
 
 const fetchUsers = (query) =>
   new Promise((resolve) => {
@@ -20,53 +21,20 @@ const fetchUsers = (query) =>
       resolve(
         users.filter((name) => name.toLowerCase().includes(query.toLowerCase()))
       );
-    }, 800);
+    }, 500);
   });
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { query, setQuery, loading, results } = useDebouncedSearch(
+    fetchUsers,
+    500
+  );
+
+  console.log("query results", query, results);
 
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  const lastQueryId = useRef(0);
-
-  const cacheRef = useRef({});
-
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    // for every query change, I have a new requestId
-    const currentReqId = ++lastQueryId.current;
-    if (!query.trim()) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-
-    // check in CACHE first
-    if (cacheRef.current[query.trim()]) {
-      setResults(cacheRef.current[query]);
-      return;
-    }
-
-    setLoading(true);
-    const timer = setTimeout(async () => {
-      const resp = await fetchUsers(query.trim());
-      // Ignore stale response
-      if (currentReqId !== lastQueryId.current) {
-        setLoading(false);
-        return;
-      }
-      setResults(resp);
-      // store new key:value pairs in cache as well.
-      cacheRef.current[query.trim()] = resp;
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [query]);
 
   useEffect(() => {
     if (inputRef?.current) {
