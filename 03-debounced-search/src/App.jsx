@@ -108,6 +108,32 @@ export default function App() {
     }
   };
 
+  const highLightMatch = (text) => {
+    const lowerQuery = query.toLowerCase();
+    const lowerText = text.toLowerCase();
+
+    // beforeMatch, match, afterMatch
+    // return beforeMatch <mark>{match}</mark> afterMatch
+
+    // query = 'an'
+    // text = 'Amandeep'
+
+    const matchIndex = lowerText.indexOf(lowerQuery);
+    if (matchIndex === -1) return text;
+
+    const beforeMatch = lowerText.slice(0, matchIndex);
+    const match = lowerText.slice(matchIndex, matchIndex + query.length);
+    const afterMatch = lowerText.slice(matchIndex + query.length);
+
+    return (
+      <>
+        {beforeMatch}
+        <mark>{match}</mark>
+        {afterMatch}
+      </>
+    );
+  };
+
   return (
     <div className="app">
       <div className="debounced_search">
@@ -134,7 +160,7 @@ export default function App() {
                   key={result}
                   className={index === activeIndex ? "active" : ""}
                 >
-                  {result}
+                  {highLightMatch(result)}
                 </li>
               ))}
             </ul>
