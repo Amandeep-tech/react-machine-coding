@@ -19,3 +19,27 @@ body {
   cursor: pointer;
 }
 
+.row {
+  display: flex;
+}
+.fileNode {
+  margin-top: .5rem;
+}
+
+.cross {
+  border: 1px solid black;
+  padding: 0 6px;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+button {
+  margin-left: 6px;
+  cursor: pointer;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+

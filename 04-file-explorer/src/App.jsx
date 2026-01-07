@@ -52,8 +52,37 @@ const explorerData = {
 };
 
 export default function App() {
-  return <FileNode 
-    data={explorerData}
-    depth={0}
-  />
+  const [treeData, setTreeData] = useState(() => explorerData);
+
+  const addNew = (node, name, id, isFile = false) => {
+
+    if (node.id === id && name) {
+      return {
+        ...node,
+        children: [
+          ...(node.children || []),
+          {
+            id: crypto.randomUUID(),
+            name: name,
+            isFolder: isFile ? false:  true,
+            children: [],
+          },
+        ],
+      };
+    }
+
+    if(!node.children) return node;
+
+    // map over node's children to find that 'id'
+    return {
+      ...node,
+      children: node.children.map((child) => addNew(child, name, id, isFile))
+    }
+  };
+
+  const onAdd = (folderName, id, isFile) => {
+    setTreeData((prevTree) => addNew(prevTree, folderName, id, isFile));
+  };
+
+  return <FileNode data={treeData} depth={0} onAdd={onAdd} />;
 }
