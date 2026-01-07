@@ -1,4 +1,4 @@
-import { act, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./styles.css";
 
 const fetchUsers = (query) =>
@@ -44,7 +44,7 @@ export default function App() {
     }
 
     // check in CACHE first
-    if (cacheRef.current[query]) {
+    if (cacheRef.current[query.trim()]) {
       setResults(cacheRef.current[query]);
       return;
     }
@@ -59,7 +59,7 @@ export default function App() {
       }
       setResults(resp);
       // store new key:value pairs in cache as well.
-      cacheRef.current[query] = resp;
+      cacheRef.current[query.trim()] = resp;
       setLoading(false);
     }, 500);
 
