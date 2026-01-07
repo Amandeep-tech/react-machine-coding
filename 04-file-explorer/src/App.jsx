@@ -65,6 +65,14 @@ export default function App() {
     }
   });
 
+  const [focusedId, setFocusedId] = useState("root")
+
+  const [expandedMap, setExpandedMap] = useState({
+    "root": false
+  });
+
+  console.log(expandedMap)
+
   useEffect(() => {
     localStorage.setItem("tree", JSON.stringify(treeData));
   }, [treeData]);
@@ -138,10 +146,13 @@ export default function App() {
   return (
     <FileNode
       data={treeData}
-      depth={0}
+      depth={1}
+      focusedId={focusedId}
       onAdd={onAdd}
       renameNodeName={renameNodeName}
       onDelete={onDelete}
+      expandedMap={expandedMap}
+      setExpandedMap={setExpandedMap}
     />
   );
 }

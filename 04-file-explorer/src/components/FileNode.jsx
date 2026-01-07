@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
+const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete, focusedId, expandedMap, setExpandedMap }) => {
   const { name, isFolder, children, id } = data || {};
-  const [isOpen, setisOpen] = useState(false);
 
   const [folderName, setFolderName] = useState("");
   const [isAddingFolder, setisAddingFolder] = useState(true);
@@ -16,7 +15,10 @@ const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
 
   const handleNameClick = () => {
     if (!isFolder) return;
-    setisOpen((prev) => !prev);
+    setExpandedMap(prev => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
   };
 
   const handleInput = (e) => {
@@ -40,7 +42,10 @@ const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
       onAdd(value, id, false);
       setFolderName("");
       setisAddingFolder(true);
-      setisOpen(true);
+      setExpandedMap(prev => ({
+        ...prev,
+        [id]: true,
+      }))
     }
   };
 
@@ -57,7 +62,10 @@ const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
       onAdd(value, id, true);
       setFileName("");
       setIsAddingFile(true);
-      setisOpen(true);
+      setExpandedMap(prev => ({
+        ...prev,
+        [id]: true,
+      }))
     }
   };
 
@@ -102,8 +110,22 @@ const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
     onDelete(id)
   }
 
+  const handleKeyDownGlobal = (e) => {
+    const key = e.key;
+    switch(key) {
+      case "ArrowDown":
+
+    }
+  }
+
   return (
-    <div className="fileNode">
+    <div className="fileNode"
+      aria-selected={focusedId === id}
+      aria-level={depth}
+      aria-expanded={isFolder ? expandedMap[id] : undefined}
+      role="treeitem"
+      onKeyDown={handleKeyDownGlobal}
+    >
       <div className="row">
         <div
           onClick={handleNameClick}
@@ -168,16 +190,18 @@ const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
           }
         </div>
       </div>
-      {children?.length > 0 && isOpen && (
+      {children?.length > 0 && expandedMap[id] && (
         <div className="indent">
           {children.map((child) => (
             <FileNode
               data={child}
               key={child.id}
               depth={depth + 1}
-              onAddFolder={onAdd}
+              onAdd={onAdd}
               renameNodeName={renameNodeName}
               onDelete={onDelete}
+              expandedMap={expandedMap}
+              setExpandedMap={setExpandedMap}
             />
           ))}
         </div>
