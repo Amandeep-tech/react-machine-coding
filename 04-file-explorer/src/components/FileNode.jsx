@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const FileNode = ({ data, depth, onAdd }) => {
+const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
   const { name, isFolder, children, id } = data || {};
   const [isOpen, setisOpen] = useState(false);
 
@@ -8,6 +8,9 @@ const FileNode = ({ data, depth, onAdd }) => {
   const [isAddingFolder, setisAddingFolder] = useState(true);
   const [isAddingFile, setIsAddingFile] = useState(true);
   const [fileName, setFileName] = useState("");
+
+  const [isRenaming, setIsRenaming] = useState(true);
+  const [lastestName, setLatestName] = useState("");
 
   const handleNameClick = () => {
     if (!isFolder) return;
@@ -20,7 +23,7 @@ const FileNode = ({ data, depth, onAdd }) => {
 
   const handleFileInput = (e) => {
     setFileName(e.target.value);
-  }
+  };
 
   const handleKeyDown = (e) => {
     const key = e.key;
@@ -54,7 +57,7 @@ const FileNode = ({ data, depth, onAdd }) => {
       setIsAddingFile(true);
       setisOpen(true);
     }
-  }; 
+  };
 
   const onPlusFolderClick = () => {
     setisAddingFolder(false);
@@ -62,7 +65,7 @@ const FileNode = ({ data, depth, onAdd }) => {
 
   const onPlusFileClick = () => {
     setIsAddingFile(false);
-  }
+  };
 
   const handleCloseInput = () => {
     setisAddingFolder(true);
@@ -70,7 +73,28 @@ const FileNode = ({ data, depth, onAdd }) => {
 
   const handleCloseInputForFile = () => {
     setIsAddingFile(true);
-  }
+  };
+
+  const handleRename = () => {
+    setIsRenaming(false);
+    setLatestName(name);
+  };
+
+  const handleKeyDownForRename = (e) => {
+    console.log(lastestName);
+    const key = e.key;
+    if(key === "Escape") {
+      // cleanup
+      setLatestName("");
+      setIsRenaming(true); // to show button again
+    }
+    if (key === "Enter") {
+      renameNodeName(lastestName, id);
+      // cleanup
+      setLatestName("");
+      setIsRenaming(true); // to show button again
+    }
+  };
 
   return (
     <div className="fileNode">
@@ -119,9 +143,20 @@ const FileNode = ({ data, depth, onAdd }) => {
                   </span>
                 </span>
               )}
-              
             </>
           ) : null}
+          {isRenaming && <button onClick={handleRename}>Rename</button>}
+          {!isRenaming && (
+            <input
+              type="text"
+              autoFocus
+              value={lastestName}
+              onChange={(e) => {
+                setLatestName(e.target.value);
+              }}
+              onKeyDown={handleKeyDownForRename}
+            />
+          )}
         </div>
       </div>
       {children?.length > 0 && isOpen && (
@@ -132,6 +167,7 @@ const FileNode = ({ data, depth, onAdd }) => {
               key={child.id}
               depth={depth + 1}
               onAddFolder={onAdd}
+              renameNodeName={renameNodeName}
             />
           ))}
         </div>

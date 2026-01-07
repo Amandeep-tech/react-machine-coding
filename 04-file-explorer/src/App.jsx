@@ -84,5 +84,22 @@ export default function App() {
     setTreeData((prevTree) => addNew(prevTree, folderName, id, isFile));
   };
 
-  return <FileNode data={treeData} depth={0} onAdd={onAdd} />;
+  const rename = (node, lastestName, id) => {
+    if(node.id === id) {
+      return {
+        ...node,
+        name: lastestName || node.name
+      }
+    }
+    return {
+      ...node,
+      children: node.children?.map(child => rename(child, lastestName, id))
+    }
+  }
+
+  const renameNodeName = (lastestName, id) => {
+    setTreeData(prevTree => rename(prevTree, lastestName, id))
+  }
+
+  return <FileNode data={treeData} depth={0} onAdd={onAdd} renameNodeName={renameNodeName} />;
 }
