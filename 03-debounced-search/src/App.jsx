@@ -34,6 +34,8 @@ export default function App() {
 
   const cacheRef = useRef({});
 
+  const inputRef = useRef(null);
+
   useEffect(() => {
     // for every query change, I have a new requestId
     const currentReqId = ++lastQueryId.current;
@@ -65,6 +67,12 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [query]);
+
+  useEffect(() => {
+    if (inputRef?.current) {
+      inputRef.current?.focus();
+    }
+  }, []);
 
   useEffect(() => {
     // reset active index to -1 for new results :)
@@ -143,12 +151,14 @@ export default function App() {
         <input
           type="text"
           id="search"
+          ref={inputRef}
           placeholder="Search..."
           value={query}
           onChange={handleQuery}
           onKeyDown={handleKeyDown}
         />
         <div className="container results">
+          {query && !loading && results.length === 0 && <div>No Results</div>}
           {loading ? (
             <div className="loading">Loading...</div>
           ) : (
