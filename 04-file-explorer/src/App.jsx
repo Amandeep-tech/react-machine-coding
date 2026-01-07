@@ -52,7 +52,22 @@ const explorerData = {
 };
 
 export default function App() {
-  const [treeData, setTreeData] = useState(() => explorerData);
+  // lazy initialisation
+  const [treeData, setTreeData] = useState(() => {
+    try {
+      const tree = localStorage.getItem("tree");
+      if (tree) {
+        return JSON.parse(tree);
+      }
+      return explorerData;
+    } catch (e) {
+      return explorerData;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tree", JSON.stringify(treeData));
+  }, [treeData]);
 
   const addNew = (node, name, id, isFile = false) => {
     if (node.id === id && name) {
