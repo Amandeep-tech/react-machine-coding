@@ -55,7 +55,6 @@ export default function App() {
   const [treeData, setTreeData] = useState(() => explorerData);
 
   const addNew = (node, name, id, isFile = false) => {
-
     if (node.id === id && name) {
       return {
         ...node,
@@ -64,20 +63,20 @@ export default function App() {
           {
             id: crypto.randomUUID(),
             name: name,
-            isFolder: isFile ? false:  true,
+            isFolder: isFile ? false : true,
             children: [],
           },
         ],
       };
     }
 
-    if(!node.children) return node;
+    if (!node.children) return node;
 
     // map over node's children to find that 'id'
     return {
       ...node,
-      children: node.children.map((child) => addNew(child, name, id, isFile))
-    }
+      children: node.children.map((child) => addNew(child, name, id, isFile)),
+    };
   };
 
   const onAdd = (folderName, id, isFile) => {
@@ -85,21 +84,49 @@ export default function App() {
   };
 
   const rename = (node, lastestName, id) => {
-    if(node.id === id) {
+    if (node.id === id) {
       return {
         ...node,
-        name: lastestName || node.name
-      }
+        name: lastestName || node.name,
+      };
     }
     return {
       ...node,
-      children: node.children?.map(child => rename(child, lastestName, id))
-    }
-  }
+      children: node.children?.map((child) => rename(child, lastestName, id)),
+    };
+  };
 
   const renameNodeName = (lastestName, id) => {
-    setTreeData(prevTree => rename(prevTree, lastestName, id))
-  }
+    setTreeData((prevTree) => rename(prevTree, lastestName, id));
+  };
 
-  return <FileNode data={treeData} depth={0} onAdd={onAdd} renameNodeName={renameNodeName} />;
+  const deleteNode = (node, targetId) => {
+    if (node.id === targetId) return node;
+    if (!node.children) return node;
+
+    //     🧠 Why this works:
+    // filter removes the target node
+    // map recursively cleans deeper levels
+    // returns a new tree
+    return {
+      ...node,
+      children: node.children
+        .filter((child) => child.id !== targetId)
+        .map((child) => deleteNode(child, targetId)),
+    };
+  };
+
+  const onDelete = (id) => {
+    setTreeData((prevTree) => deleteNode(prevTree, id));
+  };
+
+  return (
+    <FileNode
+      data={treeData}
+      depth={0}
+      onAdd={onAdd}
+      renameNodeName={renameNodeName}
+      onDelete={onDelete}
+    />
+  );
 }

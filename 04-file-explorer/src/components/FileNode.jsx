@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
+const FileNode = ({ data, depth, onAdd, renameNodeName, onDelete }) => {
   const { name, isFolder, children, id } = data || {};
   const [isOpen, setisOpen] = useState(false);
 
@@ -11,6 +11,8 @@ const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
 
   const [isRenaming, setIsRenaming] = useState(true);
   const [lastestName, setLatestName] = useState("");
+
+  const [showDeleteBtn, setShowDeleteBtn] = useState(true);
 
   const handleNameClick = () => {
     if (!isFolder) return;
@@ -96,6 +98,10 @@ const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
     }
   };
 
+  const handleDelete = () => {
+    onDelete(id)
+  }
+
   return (
     <div className="fileNode">
       <div className="row">
@@ -157,6 +163,9 @@ const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
               onKeyDown={handleKeyDownForRename}
             />
           )}
+          { id !== "root" && 
+            showDeleteBtn && <button onClick={handleDelete}>Delete</button>
+          }
         </div>
       </div>
       {children?.length > 0 && isOpen && (
@@ -168,6 +177,7 @@ const FileNode = ({ data, depth, onAdd, renameNodeName }) => {
               depth={depth + 1}
               onAddFolder={onAdd}
               renameNodeName={renameNodeName}
+              onDelete={onDelete}
             />
           ))}
         </div>
