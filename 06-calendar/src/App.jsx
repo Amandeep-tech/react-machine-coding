@@ -26,37 +26,81 @@ export default function App() {
       ...prevEvents,
       {
         id: crypto.randomUUID(),
-        ...newEvent
-      }
-    ]
-  }
+        ...newEvent,
+      },
+    ];
+  };
 
-  const handleAddEvent = ({title, startTime, endTime}) => {
-    if(!title || !startTime || !endTime) {
+  const handleAddEvent = ({ title, startTime, endTime }) => {
+    if (!title || !startTime || !endTime) {
       setError("Fill all the fields");
       return;
-    };
-    if(startTime > endTime) {
-      setError("Start time should be less than end time")
+    }
+    if (isNaN(startTime) || isNaN(endTime)) {
+      setError("Time should be in number only");
+      return;
+    }
+    if (startTime >= endTime) {
+      setError("Start time should be less than end time");
+      return;
+    }
+
+    /* 
+    // start < existingEnd && existingStart < end.
+      Existing |-----|
+      New         |-----|
+
+      // start < existingEnd && existingStart < end.
+      Existing  |-----|
+      New     |----|
+
+      // start < existingEnd && existingStart < end.
+      Existing  |-----|
+      New     |---------|
+
+      // start < existingEnd && existingStart < end.
+      Existing. |---------|
+      New         |--|
+
+
+      // Non-Overlapping below
+      
+      Existing.       |----|
+      New       |---|
+
+      Existing.       |----|
+      New                     |---|
+    */
+
+    const hasOverLap = events.some((event) => {
+      const start = Number(startTime);
+      const end = Number(endTime);
+      // finding out this condition is something tricky :)
+      if (start < event.end && event.start < end) {
+        return true;
+      }
+    });
+
+    if (hasOverLap) {
+      setError("Overlapping events found");
       return;
     }
 
     setError("");
-    setEvents(prevEvents => addEvent(prevEvents, {
-      title, start: startTime, end: endTime
-    }))
-  }
+    setEvents((prevEvents) =>
+      addEvent(prevEvents, {
+        title,
+        start: startTime,
+        end: endTime,
+      })
+    );
+  };
 
   return (
     <div>
       <h2>Add Event</h2>
       <EventForm onSubmit={handleAddEvent} />
-      {
-        error ? 
-        <div className="error">{error}</div>
-        : 
-        null
-      }
+      {error ? <div className="error">{error}</div> : null}
       <h2 className="center">Events</h2>
       <div className="app">
         <ul>
