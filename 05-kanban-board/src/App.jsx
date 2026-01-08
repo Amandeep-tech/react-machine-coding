@@ -21,7 +21,22 @@ const initialBoard = {
 };
 
 export default function App() {
-  const [board, setBoard] = useState(() => initialBoard);
+  const [board, setBoard] = useState(() => {
+    try {
+      const saved = localStorage.getItem("board");
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return initialBoard;
+    } catch (e) {
+      return initialBoard;
+    }
+  });
+
+
+  useEffect(() => {
+    localStorage.setItem('board', JSON.stringify(board));
+  }, [board])
 
   const addCard = (prevBoard, columnId, text) => {
     if (!text.trim()) return prevBoard;
@@ -47,27 +62,26 @@ export default function App() {
     // 3. Add it to target column
 
     // 1.
-    const cardToMove = prevBoard[fromColumn].items.find(item => item.id === cardId);
-    
+    const cardToMove = prevBoard[fromColumn].items.find(
+      (item) => item.id === cardId
+    );
+
     // safe guard
-    if(!cardToMove) return prevBoard;
+    if (!cardToMove) return prevBoard;
 
     // 2.
     return {
       ...prevBoard,
       [fromColumn]: {
         ...prevBoard[fromColumn],
-        items: prevBoard[fromColumn].items.filter(item => item.id !== cardId)
+        items: prevBoard[fromColumn].items.filter((item) => item.id !== cardId),
       },
       // 3.
       [toColumn]: {
         ...prevBoard[toColumn],
-        items: [
-          ...prevBoard[toColumn].items,
-          cardToMove
-        ]
-      }
-    }
+        items: [...prevBoard[toColumn].items, cardToMove],
+      },
+    };
   };
 
   const deleteCard = (prevBoard, cardId, fromColumn) => {
@@ -75,10 +89,10 @@ export default function App() {
       ...prevBoard,
       [fromColumn]: {
         ...prevBoard[fromColumn],
-        items: prevBoard[fromColumn].items.filter(item => item.id !== cardId)
-      }
-    }
-  }
+        items: prevBoard[fromColumn].items.filter((item) => item.id !== cardId),
+      },
+    };
+  };
 
   const onAddCard = (columnId, text) => {
     setBoard((prevBoard) => addCard(prevBoard, columnId, text));
@@ -89,8 +103,8 @@ export default function App() {
   };
 
   const onDelete = (cardId, fromColumn) => {
-    setBoard(prevBoard => deleteCard(prevBoard, cardId, fromColumn))
-  }
+    setBoard((prevBoard) => deleteCard(prevBoard, cardId, fromColumn));
+  };
 
   return (
     <div className="app">
