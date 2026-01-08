@@ -50,6 +50,10 @@ body {
   margin: 4px;
 }
 
+.error {
+  color: tomato;
+}
+
 .card_wrapper {
   border: 1px dotted grey;
   padding: 12px;

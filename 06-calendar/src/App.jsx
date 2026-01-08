@@ -19,6 +19,7 @@ const initialEvents = [
 
 export default function App() {
   const [events, setEvents] = useState(initialEvents);
+  const [error, setError] = useState("");
 
   const addEvent = (prevEvents, newEvent) => {
     return [
@@ -31,8 +32,16 @@ export default function App() {
   }
 
   const handleAddEvent = ({title, startTime, endTime}) => {
-    if(!title || !startTime || !endTime) return;
+    if(!title || !startTime || !endTime) {
+      setError("Fill all the fields");
+      return;
+    };
+    if(startTime > endTime) {
+      setError("Start time should be less than end time")
+      return;
+    }
 
+    setError("");
     setEvents(prevEvents => addEvent(prevEvents, {
       title, start: startTime, end: endTime
     }))
@@ -42,7 +51,12 @@ export default function App() {
     <div>
       <h2>Add Event</h2>
       <EventForm onSubmit={handleAddEvent} />
-
+      {
+        error ? 
+        <div className="error">{error}</div>
+        : 
+        null
+      }
       <h2 className="center">Events</h2>
       <div className="app">
         <ul>
