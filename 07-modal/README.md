@@ -1,54 +1,62 @@
-# Calendar / Event Scheduler (React Machine Coding)
+# Modal / Dialog Component (React Machine Coding)
 
 ## Overview
-This project implements a **single-day Calendar / Event Scheduler**, similar to a simplified Google Calendar.
+This project implements a **reusable Modal (Dialog) component** in React.
 
-It is a **commonly asked frontend machine-coding interview question**, especially for mid-level and senior roles, because it tests:
-- time-based state modeling
-- validation logic (overlapping events)
-- clean separation of UI and business logic
-- edge-case handling under ambiguity
+Modal questions are commonly asked in frontend interviews because they test:
+- controlled component patterns
+- keyboard handling
+- accessibility (a11y)
+- side-effect management
+- clean component APIs
 
 ---
 
 ## Problem Statement
-Build a **daily calendar** that allows users to:
+Build a Modal component that:
 
-- View events for a single day
-- Add new events with:
-  - title
-  - start time
-  - end time
-- Prevent **overlapping events**
-
----
-
-## Simplifications (Interview Assumptions)
-
-To keep the problem focused and interview-friendly:
-
-- Single day only (no dates)
-- Time is represented in **minutes**
-- No drag & drop initially
-- No recurring events
-- No backend
+- Can be opened and closed
+- Closes when:
+  - clicking on backdrop
+  - pressing Escape
+  - clicking close button
+- Prevents background interaction
+- Traps focus inside the modal
+- Restores focus to the trigger on close
 
 ---
 
-## Data Model
+## Constraints
+- No UI libraries
+- No external focus-trap packages
+- React only
+- Clean side-effect handling
 
-```js
-const initialEvents = [
-  {
-    id: "1",
-    title: "Standup",
-    start: 540, // 9:00 AM
-    end: 570,   // 9:30 AM
-  },
-  {
-    id: "2",
-    title: "Design Review",
-    start: 600, // 10:00 AM
-    end: 660,   // 11:00 AM
-  },
-];
+---
+
+## Phase-wise Requirements
+
+### Phase 1 (Must Have)
+- Open / close modal
+- Escape key closes modal
+- Backdrop click closes modal
+
+### Phase 2 (Common Follow-ups)
+- Focus moves into modal on open
+- Tab key cycles within modal
+- Focus returns to trigger on close
+
+### Phase 3 (Senior-Level)
+- Render modal using React Portal
+- Prevent background scroll
+- Proper ARIA roles
+
+---
+
+## Component Structure
+
+```txt
+src/
+├── App.jsx       // controls modal visibility
+├── Modal.jsx     // modal implementation
+└── styles.css
