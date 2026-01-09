@@ -2,7 +2,10 @@ body {
   font-family: system-ui, sans-serif;
   background: #f5f5f5;
 }
-
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
 .app {
   display: flex;
   justify-content: center;
@@ -10,99 +13,36 @@ body {
   width: 100%;
 }
 
-.center {
-  text-align: center;
+.modal {
+  /* height: 100%;
+  width: 100%; */
+  position: fixed;
+  inset: 0;
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: lightgray;
 }
 
-.cursor {
-  cursor: pointer;
+.modal_container {
+  position: relative;
+  margin: auto;
+  margin-top: 10%;
+  width: 400px;
+  min-height: 500px;
+  background: white;
+  padding: 1rem;
+  z-index: 1;
 }
 
-.row {
-  width: 100%;
-  padding: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border: 1px solid pink;
-}
-
-
-.cross {
-  border: 1px solid black;
-  padding: 0 6px;
-  cursor: pointer;
-  margin-left: 4px;
-}
-
-.title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-  text-underline-offset: 6px;
-  text-decoration: underline;
-}
-
-.card {
-  border: 1px solid grey;
-  padding: 8px;
-  border-radius: 6px;
-  margin: 4px;
-}
-
-.error {
-  color: tomato;
-}
-
-.card_wrapper {
-  border: 1px dotted grey;
-  padding: 12px;
-  border-radius: 6px;
-  margin: 4px;
-  margin-bottom: 0.9rem;
-}
-
-.add_card {
-  margin-bottom: 1rem;
-}
-
-input {
-  padding: 6px;
-  border-radius: 6px;
-  height: 1.5rem;
-  width: 100%;
-  border: none;
-  outline: none;
+.close_btn {
+  position: absolute;
+  border-radius: 50%;
+  right: 4px;
+  top: 4px;
 }
 
 button {
-  margin-left: 6px;
   cursor: pointer;
-  padding-left: 10px;
-  padding-right: 10px;
-
-  padding-top: 3px;
-  padding-bottom: 3px;
 }
-
-form {
-  width: 400px;
-}
-
-
-.calendar {
-  position: relative;
-  height: 1440px;
-  border: 1px solid black;
-  width: 100%;
-}
-
-.event {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bordeR: 1px solid red;
-  width: 100%;
-}
-
-
