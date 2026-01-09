@@ -89,3 +89,20 @@ form {
   width: 400px;
 }
 
+
+.calendar {
+  position: relative;
+  height: 1440px;
+  border: 1px solid black;
+  width: 100%;
+}
+
+.event {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bordeR: 1px solid red;
+  width: 100%;
+}
+
+

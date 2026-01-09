@@ -29,7 +29,9 @@ export default function App() {
 
   const [editingId, setEditingId] = useState("");
 
-  const sortedEvents = [...events].sort((eve1, eve2) => eve1.start - eve2.start);
+  const sortedEvents = [...events].sort(
+    (eve1, eve2) => eve1.start - eve2.start
+  );
 
   const addEvent = (prevEvents, event) => {
     if (!editingId) {
@@ -63,17 +65,17 @@ export default function App() {
   const handleAddEvent = ({ title, startTime, endTime }) => {
     if (!title || !startTime || !endTime) {
       setError("Fill all the fields");
-      if(editingId) setEditingId("");
+      if (editingId) setEditingId("");
       return;
     }
     if (isNaN(startTime) || isNaN(endTime)) {
       setError("Time should be in number only");
-      if(editingId) setEditingId("");
+      if (editingId) setEditingId("");
       return;
     }
     if (startTime >= endTime) {
       setError("Start time should be less than end time");
-      if(editingId) setEditingId("");
+      if (editingId) setEditingId("");
       return;
     }
 
@@ -108,7 +110,7 @@ export default function App() {
       const start = Number(startTime);
       const end = Number(endTime);
       // do no check for event which is currently being editied
-      if(event.id === editingId) return false;
+      if (event.id === editingId) return false;
       // finding out this condition is something tricky :)
       if (start < event.end && event.start < end) {
         return true;
@@ -126,7 +128,7 @@ export default function App() {
         end: endTime,
       })
     );
-    if(editingId) setEditingId("");
+    if (editingId) setEditingId("");
   };
 
   const onEdit = (id) => {
@@ -147,17 +149,32 @@ export default function App() {
       {error ? <div className="error">{error}</div> : null}
       <h2 className="center">Events</h2>
       <div className="app">
-        <ul>
+        {/* <ul>
           {sortedEvents.map((event) => (
             <>
               <li key={event.id}>
                 {event.title}, {formatTime(event.start)} -{" "}
                 {formatTime(event.end)}
-              <button onClick={() => onEdit(event.id)}>Edit</button>
+                <button onClick={() => onEdit(event.id)}>Edit</button>
               </li>
             </>
           ))}
-        </ul>
+        </ul> */}
+        <div className="calendar">
+          {events.map((event) => (
+            <div
+              key={event.id}
+              className="event"
+              style={{
+                top: event.start,
+                height: event.end - event.start,
+              }}
+            >
+              {event.title}, {formatTime(event.start)} - {formatTime(event.end)}
+              <button onClick={() => onEdit(event.id)}>Edit</button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
