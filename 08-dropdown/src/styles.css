@@ -13,35 +13,7 @@ body {
   width: 100%;
 }
 
-.modal {
-  /* height: 100%;
-  width: 100%; */
-  position: fixed;
-  inset: 0;
-}
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background-color: lightgray;
-}
 
-.modal_container {
-  position: relative;
-  margin: auto;
-  margin-top: 10%;
-  width: 400px;
-  min-height: 500px;
-  background: white;
-  padding: 1rem;
-  z-index: 1;
-}
-
-.close_btn {
-  position: absolute;
-  border-radius: 50%;
-  right: 4px;
-  top: 4px;
-}
 
 button {
   cursor: pointer;
