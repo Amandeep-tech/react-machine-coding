@@ -29,17 +29,22 @@ body {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
-  padding:4px;
+  padding:6px;
+  margin: 4px;
 }
+
+.chips.focused {
+  border: 1px solid red;
+}
+
 .chip {
   border: 1px solid black;
-  padding: 4px;
+  padding: 4px 10px;
 }
 
 button {
   border: none;
   cursor: pointer;
-  padding: 10px;
 }
 
 ul {

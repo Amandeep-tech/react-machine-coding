@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const DropDown = ({ options, selectedValues, onChange }) => {
   const [open, setOpen] = useState(false);
@@ -17,10 +17,21 @@ const DropDown = ({ options, selectedValues, onChange }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  
+  useEffect(() => {
+    if(!open) {
+      // reset my state
+      setActiveIndex(-1);
+    } else {
+      setActiveIndex(0);
+    }
+  }, [open])
 
-  const handleTrigger = () => {
-    setOpen((prev) => !prev);
-  };
+  const visibleOptions = useMemo(() => options.filter(op => {
+    if(!query.trim()) return op;
+    return op.toLowerCase().includes(query.toLowerCase()) ? op : null
+  }), [query, options])
+
 
   const handleItemClick = (option) => {
     console.log(option);
@@ -49,17 +60,17 @@ const DropDown = ({ options, selectedValues, onChange }) => {
       return;
     }
     if (e.key === "ArrowDown") {
-      setActiveIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+      setActiveIndex((prev) => (prev < visibleOptions.length - 1 ? prev + 1 : 0));
     } else if (e.key === "ArrowUp") {
-      setActiveIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
-    } else if (e.key === "Enter") {
-      handleItemClick(options[activeIndex]);
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : visibleOptions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0 && activeIndex < visibleOptions.length) {
+      handleItemClick(visibleOptions[activeIndex]);
     }
   };
 
   return (
     <div className="dropdown" ref={dropdownRef}>
-      <div className="chips">
+      <div className={`chips ${open ? 'focused' : ''}`}>
         {selectedValues.length
           ? selectedValues.map((sv) => (
               <button
@@ -77,15 +88,21 @@ const DropDown = ({ options, selectedValues, onChange }) => {
             onKeyDown={handleKeyDown}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setOpen(true)}
+            onFocus={() => {
+              setOpen(true);
+              setFocused(true)
+            }}
+            onBlur={() => {
+              setFocused(false);
+            }}
             placeholder="Search..."
-            className="inp_search"
+            className={`inp_search`}
           />
         </div>
       </div>
       {open ? (
         <ul role="listbox">
-          {options.map((option, index) => (
+          {visibleOptions.map((option, index) => (
             <li
               role="option"
               className={`${activeIndex === index ? "focused" : ""}
