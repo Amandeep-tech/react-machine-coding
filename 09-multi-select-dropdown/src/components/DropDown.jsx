@@ -4,6 +4,8 @@ const DropDown = ({ options, selectedValues, onChange }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
+  const [activeIndex, setActiveIndex] = useState(-1);
+
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -12,8 +14,8 @@ const DropDown = ({ options, selectedValues, onChange }) => {
         setOpen(false);
       }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleTrigger = () => {
@@ -27,42 +29,70 @@ const DropDown = ({ options, selectedValues, onChange }) => {
     );
     if (isPresent) {
       // filter it out
-      const newSelectedValues = selectedValues.filter(
+      onChange(prev => prev.filter(
         (sv) => sv.toLowerCase() !== option.toLowerCase()
-      );
-      onChange(newSelectedValues);
+      ))
       return;
     } else {
-      onChange([...selectedValues, option]);
+      onChange(prev => [...prev, option]);
     }
   };
+
+  const handleKeyDown = (e) => {
+    console.log("e", e);
+    if (e.key === "Tab") {
+      setOpen(true);
+      return;
+    }
+    if(e.key === 'Escape') {
+      setOpen(false);
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      setActiveIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+    } else if (e.key === "Enter") {
+      handleItemClick(options[activeIndex]);
+    }
+  };
+
   return (
     <div className="dropdown" ref={dropdownRef}>
       <div className="chips">
         {selectedValues.length
           ? selectedValues.map((sv) => (
-              <button key={sv} className="chip" onClick={() => handleItemClick(sv)}>
+              <button
+                key={sv}
+                className="chip"
+                onClick={() => handleItemClick(sv)}
+              >
                 {sv}
               </button>
             ))
           : null}
-          <div>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setOpen(true)}
-          // onBlur={() => setOpen(false)}
-          placeholder="Search..."
-          className="inp_search"
-        />
+        <div>
+          <input
+            type="text"
+            onKeyDown={handleKeyDown}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setOpen(true)}
+            placeholder="Search..."
+            className="inp_search"
+          />
         </div>
       </div>
       {open ? (
-        <ul>
-          {options.map((option) => (
+        <ul role="listbox">
+          {options.map((option, index) => (
             <li
-              className={`${selectedValues.includes(option) ? "sv" : ""}`}
+              role="option"
+              className={`${activeIndex === index ? "focused" : ""}
+              ${
+                selectedValues.includes(option) ? "sv" : ""
+              }`}
+              aria-selected={selectedValues.includes(option)}
               key={option}
               onClick={() => handleItemClick(option)}
             >
