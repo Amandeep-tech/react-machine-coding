@@ -19,11 +19,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .toast_container {
-  border: 1px solid red;
   position: absolute;
   right: 1rem;
   top: 1rem;
@@ -42,14 +41,33 @@ button {
 
 .toast {
   border: 1px solid black;
-  padding: 10px;
+  padding: 5px 10px;
+  min-width: 7rem;
+}
+
+.toast.success {
+  background-color:  green;
+  color: whitesmoke;
+}
+
+.toast.error {
+  background-color:  tomato;
+  color: whitesmoke;
+}
+
+.toast.warn {
+  background-color:  lightyellow;
+  color: black;
+}
+
+.toast time {
+  color: black;
+  font-size: 1.3rem;
 }
 
 .cross {
   border-radius: 50%;
-  border: 1px solid grey;
+  font-size: 1.2rem;
   padding: 5px;
   cursor: pointer;
 }
-
-

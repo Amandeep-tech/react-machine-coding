@@ -1,19 +1,31 @@
 import React from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 
 const Toast = ({ toast, removeToast }) => {
-  const { message } = toast;
+  const { message, type, duration, id } = toast;
+
+  const [time, setTime] = useState(() => duration / 1000);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      removeToast(toast.id);
-    }, 3000);
+      removeToast(id);
+    }, duration);
     return () => clearTimeout(timer);
-  }, [toast.id, removeToast]);
+  }, []);
+
   return (
-    <div className="toast">
+    <div className={`toast ${type}`}>
       <div>{message}</div>
-      <button onClick={() => removeToast(toast.id)} className="cross">
+      <span className="time">{time}s</span>
+      <button onClick={() => removeToast(id)} className="cross">
         x
       </button>
     </div>
