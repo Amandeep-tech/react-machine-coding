@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
 
-const Toast = () => {
+const Toast = ({ toast, removeToast }) => {
+  const { message } = toast;
   return (
-    <div>Toast</div>
-  )
-}
+    <div className="toast">
+      <div>{message}</div>
+      <button onClick={() => removeToast(toast.id)} className="cross">x</button>
+    </div>
+  );
+};
 
 export default Toast;
