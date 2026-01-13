@@ -15,13 +15,6 @@ body {
   position: relative;
 }
 
-.toast {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
 .toast_container {
   position: absolute;
   right: 1rem;
@@ -39,24 +32,48 @@ button {
   cursor: pointer;
 }
 
+/* initial state before mount */
+.toast_container .toast {
+  /* opacity: 0; */
+  transform: translateX(0px);
+}
+
 .toast {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
   border: 1px solid black;
   padding: 5px 10px;
   min-width: 7rem;
+  opacity: 0;
+  transform: translateX(50px);
+
+  /* base animation */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toast.enter {
+  opacity: 1;
+  transform: translateX(-50px);
+}
+
+.toast.leave {
+  transform: translateX(120px);
 }
 
 .toast.success {
-  background-color:  green;
+  background-color: green;
   color: whitesmoke;
 }
 
 .toast.error {
-  background-color:  tomato;
+  background-color: tomato;
   color: whitesmoke;
 }
 
 .toast.warn {
-  background-color:  lightyellow;
+  background-color: lightyellow;
   color: black;
 }
 

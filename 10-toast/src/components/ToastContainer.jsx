@@ -1,7 +1,7 @@
 import React from "react";
 import Toast from "./Toast";
 
-const ToastContainer = ({ toasts, onClose, removeToast }) => {
+const ToastContainer = ({ toasts, removeToast }) => {
   return (
     <div className="toast_container">
       {toasts.map((toast) => (
