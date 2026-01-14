@@ -21,6 +21,20 @@ body {
   top: 1rem;
 }
 
+.toast_container.top_left {
+  left: 0;
+  right: unset;
+}
+
+.toast_container.bottom_left {
+  left: 0;
+  bottom: 0;
+}
+
+.toast_container.bottom_right {
+  bottom: 0;
+}
+
 button {
   all: unset;
 }

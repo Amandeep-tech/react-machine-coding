@@ -74,7 +74,7 @@ const Toast = ({ toast, removeToast }) => {
     >
       <div>{message}</div>
       <span className="time">{time}s</span>
-      <button onClick={() => removeToast(id)} className="cross">
+      <button onClick={() => setIsLeaving(true)} className="cross">
         x
       </button>
     </div>

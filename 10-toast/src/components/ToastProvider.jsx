@@ -9,8 +9,10 @@ export const useToast = () => useContext(ToastContext);
 
 const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
+  const [direction, setDirection] = useState('');
 
-  const showToast = ({ message, type = "info", duration = 3000 }) => {
+  const showToast = ({ message, type = "info", duration = 3000, direction }) => {
+    if(direction) setDirection(direction);
     setToasts((prev) => [
       ...prev,
       {
@@ -29,7 +31,7 @@ const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={{showToast}}>
       {children}
-      <ToastContainer toasts={toasts} removeToast={onClose} />
+      <ToastContainer toasts={toasts} removeToast={onClose} direction={direction} />
     </ToastContext.Provider>
   );
 };
