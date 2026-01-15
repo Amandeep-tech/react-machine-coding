@@ -46,6 +46,11 @@ button {
   cursor: pointer;
 }
 
+button:focus-visible {
+  outline: 1px solid blue;
+  outline-offset: 1px;
+}
+
 /* initial state before mount */
 .toast_container .toast {
   /* opacity: 0; */
