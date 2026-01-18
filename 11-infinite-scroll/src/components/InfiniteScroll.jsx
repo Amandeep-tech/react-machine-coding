@@ -1,4 +1,5 @@
 import React from "react";
+import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -21,8 +22,14 @@ const InfiniteScroll = () => {
 
   const [hasMoreData, setHasMoreData] = useState(true);
 
+  const fetchedPagesRef = useRef(new Set());
+
   useEffect(() => {
     if(!hasMoreData) return;
+
+    if(fetchedPagesRef.current.has(page)) return;
+
+    fetchedPagesRef.current.add(page);
 
     async function fetchData(page) {
       try {
