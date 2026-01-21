@@ -30,3 +30,8 @@ li {
   margin-bottom: 1rem;
   border-bottom: 1px solid black;
 }
+
+.loader_ref {
+  border: 1px solid red;
+  height: 4px;
+}
