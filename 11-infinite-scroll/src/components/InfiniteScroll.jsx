@@ -10,9 +10,9 @@ const fetchItems = (page) => {
         res([]);
         return;
       }
-      const items = Array.from({ length: 10 }, (v, i) => ({
-        id: page * 10 + i,
-        text: `Item ${page * 10 + i}`,
+      const items = Array.from({ length: 100 }, (v, i) => ({
+        id: page * 100 + i,
+        text: `Item ${page * 100 + i}`,
       }));
       res(items);
     }, 1000);
@@ -95,7 +95,7 @@ const InfiniteScroll = () => {
   return (
     <div className="infinite_scroll">
       {error ? <div>{error}</div> : null}
-      {loading ? <div>Loading...</div> : null}
+      {loading ? <div>Loading items...</div> : null}
       <ul>
         {data && data.length > 0 ? (
           <>
@@ -110,7 +110,7 @@ const InfiniteScroll = () => {
         ref={loaderRef}
         style={{ height: "50px", margin: "20px 0" }}
       >
-        {loading && hasMoreData && "Loading more..."}
+        {loading && hasMoreData && "Loading more data..."}
       </div>
       {!loading && (!data || data.length === 0) ? (
         <div>No Data, try again</div>
