@@ -1,122 +1,86 @@
-import { useRef } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const fetchItems = (page) => {
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      // Stop after page 10 for example
-      if (page > 10) {
-        res([]);
-        return;
-      }
-      const items = Array.from({ length: 100 }, (v, i) => ({
-        id: page * 100 + i,
-        text: `Item ${page * 100 + i}`,
-      }));
-      res(items);
-    }, 1000);
-  });
-};
+// user scrolls
+// when last element comes in view port, loadMoreData()
+// repeat this process until API says hasMore is false or data length is 0
 
-const InfiniteScroll = () => {
+export default function InfiniteScroll() {
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
+
+  const [pageNumber, setPageNumber] = useState(1);
 
   const [hasMoreData, setHasMoreData] = useState(true);
 
-  const fetchedPagesRef = useRef(new Set());
-
-  const loaderRef = useRef(null);
-
-  const loadingRef = useRef(null);
-  const hasMoreDataRef = useRef(null);
+  const observerRef = useRef(null);
+  const lastElementRef = useRef(null);
 
   useEffect(() => {
-    loadingRef.current = loading;
-    hasMoreDataRef.current = hasMoreData;
+    void fetchData(pageNumber);
+  }, [pageNumber]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMoreData) {
+        setPageNumber((prev) => prev + 1);
+      }
+    });
+
+    if (lastElementRef.current) {
+      observerRef.current.observe(lastElementRef.current);
+    }
+
+    return () => observerRef.current?.disconnect();
   }, [loading, hasMoreData]);
 
-  useEffect(() => {
-    if (!loaderRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (
-          entry.isIntersecting &&
-          !loadingRef.current &&
-          hasMoreDataRef.current
-        ) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      {
-        threshold: 0.1,
-      },
-    );
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!hasMoreData) return;
-
-    if (fetchedPagesRef.current.has(page)) return;
-
-    fetchedPagesRef.current.add(page);
-
-    async function fetchData(page) {
-      try {
-        setLoading(true);
-        setError("");
-        const resp = await fetchItems(page);
-
-        if (resp && resp.length === 0) {
-          setHasMoreData(false);
-          return;
-        }
-
-        if (resp && resp.length > 0) {
-          // immutable updates
-          setData((prev) => [...prev, ...resp]);
-        }
-      } catch (err) {
-        console.error("error ", err);
-        setError("Error Occured");
-      } finally {
-        setLoading(false);
+  const fetchData = async (page) => {
+    try {
+      if (!hasMoreData || loading) return;
+      setLoading(true);
+      setError(false);
+      let resp = await fetch(
+        `https://openlibrary.org/search.json?q=page=${page}&limit=${100}`,
+      );
+      if (!resp.ok) {
+        throw new Error("Response is not ok");
       }
+      resp = await resp.json();
+      setData((prev) => [...prev, ...resp.docs]);
+      setHasMoreData(resp.docs.length > 0);
+      console.log("resp ", resp);
+    } catch (err) {
+      console.err("Error", err);
+      setError("Something went wrong, try again");
+    } finally {
+      setLoading(false);
     }
-    fetchData(page);
-  }, [page]);
+  };
 
   return (
     <div className="infinite_scroll">
-      {error ? <div>{error}</div> : null}
-      {loading ? <div>Loading items...</div> : null}
-      <ul>
-        {data && data.length > 0 ? (
-          <>
-            {data.map((item) => (
-              <li key={item.id}>{item.text}</li>
-            ))}
-          </>
-        ) : null}
-      </ul>
-      <div
-        className="loader_ref"
-        ref={loaderRef}
-        style={{ height: "50px", margin: "20px 0" }}
-      >
-        {loading && hasMoreData && "Loading more data..."}
-      </div>
-      {!loading && (!data || data.length === 0) ? (
-        <div>No Data, try again</div>
+      {data?.length > 0 ? (
+        <ul>
+          {data.map((item, index) => {
+            if (index === data.length - 1) {
+              return (
+                <li ref={lastElementRef} key={item.title}>
+                  {item.title}
+                </li>
+              );
+            }
+            return <li key={item.title}>{item.title}</li>;
+          })}
+        </ul>
       ) : null}
+      {loading ? <div>Loading data...</div> : null}
+      {error ? <div>{error}</div> : null}
     </div>
   );
-};
-
-export default InfiniteScroll;
+}

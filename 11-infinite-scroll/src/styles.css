@@ -17,9 +17,7 @@ body {
 
 ul {
   padding: 1rem;
-  min-height: 100vh;
-  /* max-height: 15rem; */
-  /* min-height: 15rem; */
+  border: 1px solid black;
   overflow-y: scroll;
   min-width: 15rem;
 }
@@ -32,7 +30,3 @@ li {
   border-bottom: 1px solid black;
 }
 
-.loader_ref {
-  border: 1px solid red;
-  height: 4px;
-}
