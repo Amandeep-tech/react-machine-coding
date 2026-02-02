@@ -21,7 +21,7 @@ export default function App() {
       setLoading(true);
       setError(false);
       let resp = await fetch(
-        `https://openlibrary.org/search.json?q=page=${page}&limit=${100}`,
+        `https://openlibrary.org/search.json?q=page=${page}&limit=${10}`,
       );
       if (!resp.ok) {
         throw new Error("Response is not ok");
