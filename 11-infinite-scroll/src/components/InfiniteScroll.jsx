@@ -11,7 +11,7 @@ export default function InfiniteScroll(props) {
   const lastElementRef = useRef(null);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !hasMoreData) return;
 
     if (observerRef.current) {
       observerRef.current.disconnect();
