@@ -70,7 +70,6 @@ export default function App() {
         );
         break;
       case "Escape":
-        setResults([]);
         setQuery("");
         setActiveIndex(-1);
         break;

@@ -10,7 +10,10 @@ const useDebouncedSearch = (fn, delay = 500) => {
   const cacheRef = useRef({});
 
   useEffect(() => {
-    // for every query change, I have a new requestId
+    // for every query , I have a new requestId
+    // "re" -> currentReqId(1), lastQueryId(1) = wrapped in one useEffect callback
+    // "rea" -> currentReqId(2), lastQueryId(2) = wrapped in one useEffect callback
+    // but lastQueryId is a ref, so it is accessible in all useEffect callbacks
     const currentReqId = ++lastQueryId.current;
     if (!query.trim()) {
       setResults([]);
@@ -28,7 +31,7 @@ const useDebouncedSearch = (fn, delay = 500) => {
     setLoading(true);
     const timer = setTimeout(async () => {
       const resp = await fn(query.trim());
-      // Ignore stale response
+      // Ignore stale response,
       if (currentReqId !== lastQueryId.current) {
         setLoading(false);
         return;
