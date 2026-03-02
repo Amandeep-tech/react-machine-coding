@@ -1,112 +1,72 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import "./styles.css";
+import AutoComplete from "./components/AutoComplete";
+import debounce from "./hooks/debounce";
 
-// It is recommended to use functional state updates
-// so that your closure always gets updated state value
+const URL = "https://dummyjson.com/recipes/search";
 
-// Edge Cases
-// 1. Multiple rapid clicks ?
-// disable button for few ms or use debounce (2 approaches here to handle rapid clicks)
+const App = () => {
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  const cacheRef = useRef({});
+  const abortController = useRef(null);
 
-// How would you prevent negative values?
-// 1. Disable the dec button when count reaches 0
-// 2. use Math.max(0, c - 1)
+  const fetchSuggestions = debounce(async (query) => {
+    if (!query.trim()) {
+      setData(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    };
 
-// How would you persist count on refresh?
-// 1. use localStorage :)
-// 2. lazy initialise the state so that it is not executed on every render
-// don't know but this persist thing is not working yaar :(
+    query = query.toLowerCase();
 
-// How would you optimize re-renders?
-// Optimisation for such small component do not make any huge impact though
-// but we could memoise our event handlers so that their NEW references do not get created on
-// every render
-
-export default function App() {
-  const [count, setCount] = useState(() => {
-    const savedVal = localStorage.getItem("count");
-    return savedVal !== null ? Number(savedVal) : 0;
-  });
-  const [disabled, setDisabled] = useState(false);
-
-  const timerRef = useRef(null);
-
-  console.log("count", count);
-
-  useEffect(() => {
-    localStorage.setItem("count", count);
-  }, [count]);
-
-  
-  const increment = useCallback(() => {
-    // disable button for 2 sec to avoid rapid click
-    // setDisabled(true);
-    // setCount(count => count + 1);
-    // setTimeout(() => {
-    //   setDisabled(false);
-    // }, [2000]);
-
-    // use debounce
-    if(timerRef.current) return;
-
-    setDisabled(true);
-    timerRef.current = setTimeout(() => {
-      setCount(count => count + 1);
-      setDisabled(false);
-      timerRef.current = null;
-    }, 100);
-  }, []);
-
-  const decrement = useCallback(() => {
-    // disable button for 2 sec to avoid rapid click
-    // setDisabled(true);
-    // setCount(count => count - 1);
-    // setTimeout(() => {
-    //   setDisabled(false);
-    // }, [2000]);
-
-    // use debounce
-    if(timerRef.current) return;
-
-    setDisabled(true);
-    timerRef.current = setTimeout(() => {
-      // prevent negative values
-      setCount(count => Math.max(0, count - 1));
-      setDisabled(false);
-      timerRef.current = null;
-    }, 100);
-  }, []);
-
-  const reset = useCallback(() => {
-    setCount(0);
-    timerRef.current = null;
-  }, [])
-
-  // keyboard support to improve accessibility
-  useEffect(() => {
-    const handler = (e) => {
-      if(e.key === "ArrowUp") increment();
-      else if(e.key === "ArrowDown") decrement();
-      else if(e.key === "r") reset();
+    if(cacheRef.current[query]) {
+      setData(cacheRef.current[query])
+      return; 
     }
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
+
+    if(abortController.current) {
+      abortController.current.abort();
+    }
+    const controller = new AbortController();
+    abortController.current = controller
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch(`${URL}?q=${query}`, {
+        signal: controller?.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch, try again`);
+      }
+
+      const result = await response.json();
+      setData(result?.recipes);
+      cacheRef.current[query] = result?.recipes
+    } catch (err) {
+      if(err.name === "AbortError") return;
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, 700);
 
   return (
     <div className="app">
-      <div className="container">
-        <h1>Counter</h1>
-
-        <p className="count">{count}</p>
-
-        <div className="actions">
-          <button disabled={disabled} onClick={increment}>+</button>
-          <button disabled={disabled} onClick={decrement}>-</button>
-          <button onClick={reset}>Reset</button>
-        </div>
-      </div>
+      <AutoComplete
+        placeholder={"Search..."}
+        data={data || null}
+        isLoading={isLoading}
+        error={error}
+        fetchSuggestions={fetchSuggestions}
+      />
     </div>
   );
-}
+};
+
+export default App;
