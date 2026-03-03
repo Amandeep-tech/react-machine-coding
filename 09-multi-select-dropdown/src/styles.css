@@ -5,6 +5,7 @@ body {
 * {
   box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 .app {
   display: flex;
@@ -15,7 +16,12 @@ body {
 
 .dropdown {
   border: 1px solid gray;
-  width: 300px;
+  min-width: 400px;
+}
+
+.inp_search_container {
+  width: 100%;
+  /* display: inline-block; */
 }
 
 .inp_search {
@@ -25,7 +31,7 @@ body {
   padding-left: 0;
 }
 
-.chips {
+.chips_container {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
@@ -33,8 +39,8 @@ body {
   margin: 4px;
 }
 
-.chips.focused {
-  border: 1px solid red;
+.chips_container.focused {
+  border: 1px solid black;
 }
 
 .chip {
@@ -49,8 +55,8 @@ button {
 
 ul {
   margin: 0;
-  padding: 0;
-  margin-top: 1rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
 }
 
 li {
@@ -60,8 +66,8 @@ li {
 }
 
 li.sv {
-  background-color: lightgreen;
+  background-color: skyblue;
 }
 li.focused {
-  border: 1px solid blue;
+  border: 1px solid skyblue;
 }

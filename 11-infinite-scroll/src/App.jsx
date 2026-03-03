@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "./components/InfiniteScroll";
 import "./styles.css";
 
@@ -38,9 +38,9 @@ export default function App() {
     }
   };
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setPageNumber(prev => prev + 1);
-  }
+  }, [])
 
   return (
     <div className="app">

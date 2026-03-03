@@ -70,7 +70,7 @@ const DropDown = ({ options, selectedValues, onChange }) => {
 
   return (
     <div className="dropdown" ref={dropdownRef}>
-      <div className={`chips ${open ? 'focused' : ''}`}>
+      <div className={`chips_container ${open ? 'focused' : ''}`}>
         {selectedValues.length
           ? selectedValues.map((sv) => (
               <button
@@ -82,18 +82,16 @@ const DropDown = ({ options, selectedValues, onChange }) => {
               </button>
             ))
           : null}
-        <div>
+        <div className="inp_search_container">
           <input
-            type="text"
+            type="search"
             onKeyDown={handleKeyDown}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => {
               setOpen(true);
-              setFocused(true)
             }}
             onBlur={() => {
-              setFocused(false);
             }}
             placeholder="Search..."
             className={`inp_search`}
@@ -105,12 +103,12 @@ const DropDown = ({ options, selectedValues, onChange }) => {
           {visibleOptions.map((option, index) => (
             <li
               role="option"
+              key={option}
               className={`${activeIndex === index ? "focused" : ""}
               ${
                 selectedValues.includes(option) ? "sv" : ""
               }`}
               aria-selected={selectedValues.includes(option)}
-              key={option}
               onClick={() => handleItemClick(option)}
             >
               {option}

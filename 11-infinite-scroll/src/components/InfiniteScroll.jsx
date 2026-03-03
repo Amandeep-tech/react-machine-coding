@@ -28,11 +28,15 @@ export default function InfiniteScroll(props) {
     }
 
     return () => observerRef.current?.disconnect();
-  }, [loading, hasMoreData]);
+  }, [loading, hasMoreData, loadData]);
+
 
   return (
     <div className="infinite_scroll">
       {error ? <div>{error}</div> : null}
+      {!hasMoreData && !loading ? <div>No more data</div> : null}
+      {loading ? <div>Loading data...</div> : null}
+      {!loading && data?.length === 0 ? <div>No data</div> : null}
       {data?.length > 0 ? (
         <ul>
           {data.map((item, index) => {
@@ -47,7 +51,6 @@ export default function InfiniteScroll(props) {
           })}
         </ul>
       ) : null}
-      {loading ? <div>Loading data...</div> : null}
     </div>
   );
 }
